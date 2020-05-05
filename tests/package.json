@@ -1,0 +1,10 @@
+{
+  "name": "tests",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "m": "cd .. && npm run m",
+    "r": "npx ts-node $1"
+  },
+  "devDependencies": {}
+}

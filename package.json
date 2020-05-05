@@ -1,0 +1,50 @@
+{
+  "name": "df-cheatcodes",
+  "types": "./dist/index.d.ts",
+  "version": "0.5.1",
+  "description": "",
+  "main": "./dist/index.js",
+  "scripts": {
+    "patch": "npm version patch",
+    "prepublish": "echo 'any pre publish tasks like bumping or rebuilding, tests'",
+    "m": "clear && cd tests && ts-node main.ts",
+    "start": "npm run build",
+    "build": "tsc",
+    "killdist": "rm -rf dist/ 2>/dev/null",
+    "test": "npm run killdist && npm run build && node_modules/.bin/tape dist/tests/*.test.js",
+    "coverage": "istanbul cover node_modules/.bin/tape ./dist/tests/*.test.js"
+  },
+  "keywords": [
+    "Intelligent Agents",
+    "Chatbots",
+    "Conversational Interfaces for Teams",
+    "DevTooling"
+  ],
+  "author": "Victor Algaze",
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/dialogflow": "^4.0.4",
+    "@types/lodash.get": "^4.4.6",
+    "@types/tape": "^4.13.0",
+    "actions-on-google": "^2.12.0",
+    "ava": "^3.7.1",
+    "dialogflow": "^1.2.0",
+    "istanbul": "^0.4.5",
+    "lodash.get": "^4.4.2",
+    "nodemon": "^2.0.3",
+    "np": "^6.2.3",
+    "prettier": "^2.0.5",
+    "tape": "^5.0.0",
+    "tape-await": "^0.1.2",
+    "ts-node": "^8.8.2",
+    "typescript": "^3.8.3"
+  },
+  "peerDependencies": {
+    "actions-on-google": "^2.12.0",
+    "dialogflow": "^1.2.0"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "pb-util": "^0.1.3"
+  }
+}
