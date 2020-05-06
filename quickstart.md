@@ -17,6 +17,7 @@ import { convCheat } from "df-cheatcodes";
 import { DFCheatConversation } from "df-cheatcodes";
 
 const app = dialogflow();
+app.use(convCheat());
 
 app.intent("intent 123", async (conv: DFCheatConversation) => {
   // Pick random
@@ -39,7 +40,3 @@ app.intent("intent 123", async (conv: DFCheatConversation) => {
   const data = conv.cheat.getContextData("myContext");
 });
 ```
-
-## learn it!
-
-**[see guide.md](./docs/guide.md)**
