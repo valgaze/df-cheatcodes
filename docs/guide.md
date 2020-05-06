@@ -9,6 +9,8 @@ import { DFCheatConversation } from "df-cheatcodes";
 
 const app = dialogflow();
 
+app.use(convCheat());
+
 app.intent("intent 123", async (conv: DFCheatConversation) => {
   // Pick random
   conv.cheat.pickRandom([
