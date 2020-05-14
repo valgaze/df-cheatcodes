@@ -25,6 +25,14 @@ test("setup", function (t) {
 test("<conv.cheat.api/get/post: Retrieves data>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = {
+    outputContexts: [
+      {
+        name:
+          "projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google",
+        lifespanCount: 99,
+        parameters: { data: '{"__map":{"various":[]}}' },
+      },
+    ],
     payload: {
       google: {
         expectUserResponse: true,
@@ -78,8 +86,52 @@ test("<conv.cheat.api/get/post: Retrieves data>", async (t: any) => {
 
   const res = await transmit("api_sample");
   const clean = JSON.parse(JSON.stringify(res.body));
-  console.log(">>ACT", JSON.stringify(clean));
-  console.log(">>EXPECTED", JSON.stringify(sample));
+  const expected = sample;
+
+  t.deepEqual(clean, expected);
+});
+
+test("teardown", function (t) {
+  // ...
+  t.end();
+});
+
+test("<conv.cheat.post: transmits data>", async (t: any) => {
+  // RES.webhookPayload.google.richResponse.items
+  const sample = {
+    outputContexts: [
+      {
+        name:
+          "projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google",
+        lifespanCount: 99,
+        parameters: { data: '{"__map":{"various":[]}}' },
+      },
+    ],
+    payload: {
+      google: {
+        expectUserResponse: true,
+        richResponse: {
+          items: [
+            {
+              simpleResponse: {
+                textToSpeech: '{"a":1}',
+              },
+            },
+          ],
+        },
+      },
+    },
+  };
+
+  app.intent("api_sample", async (conv: DFCheatConversation) => {
+    const post = await conv.cheat.post("https://postman-echo.com/post", {
+      a: 1,
+    });
+    conv.ask(JSON.stringify(post.data.data));
+  });
+
+  const res = await transmit("api_sample");
+  const clean = JSON.parse(JSON.stringify(res.body));
   const expected = sample;
 
   t.deepEqual(clean, expected);

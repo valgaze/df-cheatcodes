@@ -1,6 +1,146 @@
-# Actions On Google
+# Actions On Google Cheats
 
-[[Work in progress]]
+- **[Full](#full-example)**
+
+- **[Individual File](#individual-file)**
+
+- **[Rich Components](#rich-components)**
+
+## Full Example
+
+```ts
+import { dialogflow } from "actions-on-google";
+import { convCheat } from "df-cheatcodes";
+
+// types
+import { DFCheatConversation } from "df-cheatcodes";
+
+const app = dialogflow();
+
+app.use(convCheat());
+
+app.intent("intent 123", async (conv: DFCheatConversation) => {
+  // Pick & say random response
+  conv.cheat.pickRandom([
+    "Hi there",
+    "Hey how are you doing?",
+    "Hallo",
+    "Bonjour!",
+  ]);
+
+  // Pick random from a template (external file, multiple languages, etc)
+  // NOTE: $[variable] for anything to be swapped out by template
+  // ${variable} for anything replaced in local scope
+
+  const elapsedTime = new Date().getTime();
+  const phrases = [
+    `Hey $[name]! Here's your $[flavor] ice cream`,
+    `Yo $[name], one $[flavor] for 'ya!`,
+    `A $[flavor] for $[name]!`,
+    `Did you know it's been ${elapsedTime} since 1970, $[name]? Crazy right? Anyway here's your $[flavor] ice cream`,
+  ];
+
+  conv.cheat.template(phrases, {
+    name: "Joe",
+    flavor: "mint",
+  });
+
+  // Interact with APIs (retrieve data)
+  const res = await conv.cheat.get("https://swapi.py4e.com/api/people/1");
+  conv.ask(`The name is ${res.data.name}`);
+
+  // Interact with APIs (send data, do work)
+  const res = await conv.cheat.post("https://postman-echo.com/post", { a: 1 });
+  conv.ask(`Posted response ${JSON.stringify(res)}`);
+
+  // Save data between intents (attached to full conversation session)
+  conv.cheat.saveData("characterName", res.data.name);
+  conv.cheat.getData("characterName"); // value of res.data.name
+
+  const requestData = conv.cheat.getRequestData(); // Get conv.request data (anything sent with queryParams.payload, https://cloud.google.com/dialogflow/docs/reference/rest/v2/QueryParameters
+
+  // contexts
+  conv.cheat.addContext("myContext", 3, { a: 1, b: 2 });
+  const contextData = conv.cheat.getContextData("myContext"); // { a: 1, b: 2 }
+  conv.cheat.removeContext("myContext");
+
+  // Suggestion "chips"
+  conv.ask("Here are the options...");
+  conv.cheat.suggestions(["option A", "Option B", "Option C"]);
+
+  // Card (other rich components: )
+  conv.cheat.card({
+    text: `Here is your 🍦!!! This type of mint ice cream is great  \nEverybody after this line break loves it.`,
+    subtitle: "Here's your subtitle",
+    title: `Here's your large mint`,
+    button: {
+      title: `Learn more about mint ice cream`,
+      url: `http://kitchenability.com/kitchenability/mint-chocolate-chip-ice-cream`,
+    },
+    image: {
+      url: "https://i.imgur.com/W9Eeuu1.jpg",
+      alt: "Mint!",
+    },
+  });
+});
+```
+
+## Individual File
+
+Like in **[df-cheatkit](https://github.com/valgaze/df-cheatkit)**
+
+```ts
+import { dialogflow } from "actions-on-google";
+import { convCheat } from "df-cheatcodes";
+
+const app = dialogflow();
+app.use(convCheat());
+```
+
+Intent handler
+
+```ts
+// types
+import { DFCheatConversation } from "df-cheatcodes";
+
+export default function (conv: DFCheatConversation, parameters) {
+  const { "icecream-flavor": flavor, "icecream-size": size } = parameters; // "flavor", "size" now available
+
+  const icecreamHash = {
+    chocolate: "https://i.imgur.com/uMtF8ah.jpg",
+    vanilla: "https://i.imgur.com/zqKeYU5.jpg",
+    strawberry: "https://i.imgur.com/GSZEI39.jpg",
+    mint: "https://i.imgur.com/W9Eeuu1.jpg",
+  };
+
+  const imageURL = icecreamHash[flavor];
+  conv.cheat.pickRandom([
+    `All right, one ${flavor} coming up!`,
+    `We've got a ${size} mint for ya`,
+    `There's a ${flavor} with your name on it`,
+  ]);
+
+  conv.cheat.card({
+    text: `Here is your 🍦!!! This type of ${flavor} ice cream is great  \nEverybody after this line break loves it.`,
+    subtitle: "Here's your subtitle",
+    title: `Here's your ${size} ${flavor}`,
+    buttons: [
+      {
+        title: `Learn more about mint ice cream`,
+        url: `http://kitchenability.com/kitchenability/mint-chocolate-chip-ice-cream`,
+      },
+    ],
+    image: {
+      url: "https://i.imgur.com/W9Eeuu1.jpg",
+      alt: "Mint!",
+    },
+  });
+
+  conv.cheat.suggestions(["I want another ice cream!", "Tell me a joke"]);
+}
+```
+
+## Rich Components
 
 basicCard, carouselBrowse, mediaResponse, tableCard
 
@@ -8,19 +148,7 @@ basicCard, carouselBrowse, mediaResponse, tableCard
 | :--------------: |
 
 
-- **[pickRandom](#no-op)**
-
-- **[get/saveData](#no-op)**
-
-- **[API](#no-op)**
-
-| **Rich Response Items** |
-| :---------------------: |
-
-
-- **[simpleResponse](#simpleResponse)**
-
-- **[basicCard](#BasicCard)**
+- **[basicCard](#card)**
 
 - **[tableCard](#tableCard)**
 
@@ -46,7 +174,9 @@ _AKA Carousel or List, don't use both in a single response_
 
 https://developers.google.com/assistant/conversational/selection-responses
 
-## Skeleton response
+## Skeleton API response
+
+Note: Response may be in Protostruct, see **[here](./grpc.md)** for details
 
 ```json
 {
@@ -75,7 +205,7 @@ https://developers.google.com/assistant/conversational/selection-responses
 }
 ```
 
-**[⬆️_TOP](#actions-on-google)**
+**[⬆️_TOP](#rich-components)**
 
 ### card
 
@@ -127,7 +257,7 @@ app.intent("my intent name", (conv: DFCheatConversation, parameters) => {
 }
 ```
 
-**[⬆️_TOP](#actions-on-google)**
+**[⬆️_TOP](#rich-components)**
 
 ### Suggestions/"Chips"
 
@@ -138,13 +268,13 @@ Note: Images on their own get wrapped in a card
 **Usage**
 
 ```js
-app.intent("my intent name", (conv, parameters) => {
+app.intent("my intent name", (conv: DFCheatConversation, parameters) => {
   // Suggestions
-  conv.ask.suggestions(["Suggestion 1", "Suggestion 2"]));
+  conv.cheat.suggestions(["Suggestion 1", "Suggestion 2"]));
 });
 ```
 
-**Response (webhookPayload.google.richResponse.suggestions)**
+**Response (webhookPayload.google.richResponse.items)**
 
 ```json
 {
@@ -159,39 +289,7 @@ app.intent("my intent name", (conv, parameters) => {
 }
 ```
 
-**[⬆️_TOP](#actions-on-google)**
-
-### Suggestion B: "Linkout Suggestion"
-
-Note: only one linkout suggestion per response. URL must be valid
-
-**Usage**
-
-```js
-app.intent("my intent name", (conv, parameters) => {
-  // LinkOut Suggestion
-  conv.ask(
-    new LinkOutSuggestion({
-      name: "Suggestion bongo",
-      url: "https://assistant.google.com/",
-    })
-  );
-});
-```
-
-**Response (webhookPayload.google.richResponse.suggestions)**
-
-```json
-{
-  "suggestions": [],
-  "linkOutSuggestion": {
-    "destinationName": "Jams",
-    "url": "https://www.youtube.com/watch?v=UzYibo3igGU"
-  }
-}
-```
-
-**[⬆️_TOP](#actions-on-google)**
+**[⬆️_TOP](#rich-components)**
 
 ### tableCard
 
@@ -200,18 +298,16 @@ https://developers.google.com/assistant/conversational/rich-responses#TableCardS
 **Usage**
 
 ```js
-app.intent("my intent name", (conv, parameters) => {
+app.intent("my intent name", (conv: DFCheatConversation, parameters) => {
   // Table
-  conv.ask(
-    new Table({
-      dividers: true,
-      columns: ["header 1", "header 2", "header 3"],
-      rows: [
-        ["row 1 item 1", "row 1 item 2", "row 1 item 3"],
-        ["row 2 item 1", "row 2 item 2", "row 2 item 3"],
-      ],
-    })
-  );
+  conv.cheat.table(({
+     dividers: true,
+     columns: ['header 1', 'header 2', 'header 3'],
+     rows: [
+       ['row 1 item 1', 'row 1 item 2', 'row 1 item 3'],
+       ['row 2 item 1', 'row 2 item 2', 'row 2 item 3'],
+     ],
+  })
 });
 ```
 
@@ -265,7 +361,7 @@ app.intent("my intent name", (conv, parameters) => {
 }
 ```
 
-**[⬆️_TOP](#actions-on-google)**
+**[⬆️_TOP](#rich-components)**
 
 ### mediaResponse
 
@@ -276,19 +372,16 @@ Note: Resource URL must be publicly accessible
 **Usage**
 
 ```js
-app.intent("my intent name", (conv, parameters) => {
-  // Media Object
-  conv.ask(
-    new MediaObject({
-      name: "Jazz in Paris",
-      url: "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3",
-      description: "A funky Jazz tune",
-      icon: new Image({
-        url: "http://storage.googleapis.com/automotive-media/album_art.jpg",
-        alt: "Media icon",
-      }),
-    })
-  );
+app.intent("my intent name", (conv: DFCheatConversation, parameters) => {
+  conv.cheat.media({
+    name: "Jazz in Paris",
+    url: "http://storage.googleapis.com/automotive-media/Jazz_In_Paris.mp3",
+    description: "A funky Jazz tune",
+    icon: {
+      url: "http://storage.googleapis.com/automotive-media/album_art.jpg",
+      alt: "Media icon",
+    },
+  });
 });
 ```
 
@@ -313,7 +406,7 @@ app.intent("my intent name", (conv, parameters) => {
 }
 ```
 
-**[⬆️_TOP](#actions-on-google)**
+**[⬆️_TOP](#rich-components)**
 
 ### carouselBrowse
 
@@ -324,37 +417,34 @@ Note: Resource URL must be publicly accessible
 **Usage**
 
 ```js
-app.intent("my intent name", (conv, parameters) => {
+app.intent("my intent name", (conv: DFCheatConversation, parameters) => {
   // Browse Carousel
-
-  conv.ask(
-    new BrowseCarousel({
-      items: [
-        new BrowseCarouselItem({
-          title: "Title of item 1",
-          url: "https://example.com",
-          description: "Description of item 1",
-          image: new Image({
-            url:
-              "https://storage.googleapis.com/actionsresources/logo_assistant_2x_64dp.png",
-            alt: "Image alternate text",
-          }),
-          footer: "Item 1 footer",
-        }),
-        new BrowseCarouselItem({
-          title: "Title of item 2",
-          url: "https://example.com",
-          description: "Description of item 2",
-          image: new Image({
-            url:
-              "https://storage.googleapis.com/actionsresources/logo_assistant_2x_64dp.png",
-            alt: "Image alternate text",
-          }),
-          footer: "Item 2 footer",
-        }),
-      ],
-    })
-  );
+  conv.cheat.browseCarousel({
+    items: [
+      {
+        title: "Title of item 1",
+        url: "https://example.com",
+        description: "Description of item 1",
+        image: {
+          url:
+            "https://storage.googleapis.com/actionsresources/logo_assistant_2x_64dp.png",
+          alt: "Image alternate text",
+        },
+        footer: "Item 1 footer",
+      },
+      {
+        title: "Title of item 2",
+        url: "https://example.com",
+        description: "Description of item 2",
+        image: {
+          url:
+            "https://storage.googleapis.com/actionsresources/logo_assistant_2x_64dp.png",
+          alt: "Image alternate text",
+        },
+        footer: "Item 2 footer",
+      },
+    ],
+  });
 });
 ```
 
@@ -393,7 +483,7 @@ app.intent("my intent name", (conv, parameters) => {
 }
 ```
 
-**[⬆️_TOP](#actions-on-google)**
+**[⬆️_TOP](#rich-components)**
 
 ### carouselSelect
 
@@ -408,70 +498,31 @@ Note: Taps should emit event `actions_intent_OPTION` (hopefully an intent "liste
 **Usage**
 
 ```js
-app.intent("my intent name", (conv, parameters) => {
-  // Constants for list and carousel selection
-  const SELECTION_KEY_GOOGLE_ASSISTANT = "googleAssistant";
-  const SELECTION_KEY_GOOGLE_PAY = "googlePay";
-  const SELECTION_KEY_GOOGLE_PIXEL = "googlePixel";
-  const SELECTION_KEY_GOOGLE_HOME = "googleHome";
-
-  // Constant for image URLs
-  const IMG_URL_AOG =
-    "https://storage.googleapis.com/actionsresources/logo_assistant_2x_64dp.png";
-  const IMG_URL_GOOGLE_PAY =
-    "https://storage.googleapis.com/actionsresources/logo_pay_64dp.png";
-  const IMG_URL_GOOGLE_PIXEL =
-    "https://storage.googleapis.com/madebygoog/v1/Pixel/Pixel_ColorPicker/Pixel_Device_Angled_Black-720w.png";
-  const IMG_URL_GOOGLE_HOME =
-    "https://lh3.googleusercontent.com/Nu3a6F80WfixUqf_ec_vgXy_c0-0r4VLJRXjVFF_X_CIilEu8B9fT35qyTEj_PEsKw";
-
+app.intent("my intent name", (conv: DFCheatConversation, parameters) => {
+  conv.ask(`Which of these look good?`);
   // Carousel select
-  conv.ask(
-    new Carousel({
-      items: {
-        // Add the first item to the carousel
-        [SELECTION_KEY_GOOGLE_ASSISTANT]: {
-          synonyms: ["Assistant", "Google Assistant"],
-          title: "Item #1",
-          description: "Description of Item #1",
-          image: new Image({
-            url: IMG_URL_AOG,
-            alt: "Google Assistant logo",
-          }),
-        },
-        // Add the second item to the carousel
-        [SELECTION_KEY_GOOGLE_PAY]: {
-          synonyms: ["Transactions", "Google Payments"],
-          title: "Item #2",
-          description: "Description of Item #2",
-          image: new Image({
-            url: IMG_URL_GOOGLE_PAY,
-            alt: "Google Pay logo",
-          }),
-        },
-        // Add third item to the carousel
-        [SELECTION_KEY_GOOGLE_PIXEL]: {
-          synonyms: ["Pixel", "Google Pixel phone"],
-          title: "Item #3",
-          description: "Description of Item #3",
-          image: new Image({
-            url: IMG_URL_GOOGLE_PIXEL,
-            alt: "Google Pixel phone",
-          }),
-        },
-        // Add last item of the carousel
-        [SELECTION_KEY_GOOGLE_HOME]: {
-          title: "Item #4",
-          synonyms: ["Google Home"],
-          description: "Description of Item #4",
-          image: new Image({
-            url: IMG_URL_GOOGLE_HOME,
-            alt: "Google Home",
-          }),
+  conv.cheat.carousel({
+    items: {
+      key1: {
+        title: "Chocolate ice cream",
+        description: "Description of number one",
+        synonyms: ["synonym of KEY_ONE 1", "synonym of KEY_ONE 2"],
+        image: {
+          url: "https://i.imgur.com/uMtF8ah.jpg",
+          alt: "chocolate ice cream",
         },
       },
-    })
-  );
+      key2: {
+        title: "Number two",
+        description: "Description of number one",
+        synonyms: ["synonym of KEY_TWO 1", "synonym of KEY_TWO 2"],
+        image: {
+          url: "https://i.imgur.com/W9Eeuu1.jpg",
+          alt: "mint ice cream",
+        },
+      },
+    },
+  });
 });
 ```
 
@@ -481,10 +532,7 @@ app.intent("my intent name", (conv, parameters) => {
 {
   "webhookPayload": {
     "google": {
-      "richResponse": {
-        "items": [],
-        "suggestions": []
-      },
+      "expectUserResponse": true,
       "systemIntent": {
         "intent": "actions.intent.OPTION",
         "data": {
@@ -493,62 +541,47 @@ app.intent("my intent name", (conv, parameters) => {
             "items": [
               {
                 "optionInfo": {
-                  "key": "googleAssistant",
-                  "synonyms": ["Assistant", "Google Assistant"]
+                  "key": "key1",
+                  "synonyms": ["synonym of KEY_ONE 1", "synonym of KEY_ONE 2"]
                 },
-                "description": "Description of Item #1",
+                "description": "Description of number one",
                 "image": {
-                  "url": "https://storage.googleapis.com/actionsresources/logo_assistant_2x_64dp.png",
-                  "accessibilityText": "Google Assistant logo"
+                  "url": "https://i.imgur.com/uMtF8ah.jpg",
+                  "accessibilityText": "chocolate ice cream"
                 },
-                "title": "Item #1"
+                "title": "Chocolate ice cream"
               },
               {
                 "optionInfo": {
-                  "key": "googlePay",
-                  "synonyms": ["Transactions", "Google Payments"]
+                  "key": "key2",
+                  "synonyms": ["synonym of KEY_TWO 1", "synonym of KEY_TWO 2"]
                 },
-                "description": "Description of Item #2",
+                "description": "Description of number one",
                 "image": {
-                  "url": "https://storage.googleapis.com/actionsresources/logo_pay_64dp.png",
-                  "accessibilityText": "Google Pay logo"
+                  "url": "https://i.imgur.com/W9Eeuu1.jpg",
+                  "accessibilityText": "mint ice cream"
                 },
-                "title": "Item #2"
-              },
-              {
-                "optionInfo": {
-                  "key": "googlePixel",
-                  "synonyms": ["Pixel", "Google Pixel phone"]
-                },
-                "description": "Description of Item #3",
-                "image": {
-                  "url": "https://storage.googleapis.com/madebygoog/v1/Pixel/Pixel_ColorPicker/Pixel_Device_Angled_Black-720w.png",
-                  "accessibilityText": "Google Pixel phone"
-                },
-                "title": "Item #3"
-              },
-              {
-                "optionInfo": {
-                  "key": "googleHome",
-                  "synonyms": ["Google Home"]
-                },
-                "description": "Description of Item #4",
-                "image": {
-                  "url": "https://lh3.googleusercontent.com/Nu3a6F80WfixUqf_ec_vgXy_c0-0r4VLJRXjVFF_X_CIilEu8B9fT35qyTEj_PEsKw",
-                  "accessibilityText": "Google Home"
-                },
-                "title": "Item #4"
+                "title": "Number two"
               }
             ]
           }
         }
+      },
+      "richResponse": {
+        "items": [
+          {
+            "simpleResponse": {
+              "textToSpeech": "Which of these looks good?"
+            }
+          }
+        ]
       }
     }
   }
 }
 ```
 
-**[⬆️_TOP](#actions-on-google)**
+**[⬆️_TOP](#rich-components)**
 
 ### listSelect
 
@@ -566,73 +599,19 @@ Note: title & option keys are required fields
 
 ```js
 app.intent("my intent name", (conv, parameters) => {
-  // Constants for list and carousel selection
-  const SELECTION_KEY_GOOGLE_ASSISTANT = "googleAssistant";
-  const SELECTION_KEY_GOOGLE_PAY = "googlePay";
-  const SELECTION_KEY_GOOGLE_PIXEL = "googlePixel";
-  const SELECTION_KEY_GOOGLE_HOME = "googleHome";
-
-  // Constant for image URLs
-  const IMG_URL_AOG =
-    "https://storage.googleapis.com/actionsresources/logo_assistant_2x_64dp.png";
-  const IMG_URL_GOOGLE_PAY =
-    "https://storage.googleapis.com/actionsresources/logo_pay_64dp.png";
-  const IMG_URL_GOOGLE_PIXEL =
-    "https://storage.googleapis.com/madebygoog/v1/Pixel/Pixel_ColorPicker/Pixel_Device_Angled_Black-720w.png";
-  const IMG_URL_GOOGLE_HOME =
-    "https://lh3.googleusercontent.com/Nu3a6F80WfixUqf_ec_vgXy_c0-0r4VLJRXjVFF_X_CIilEu8B9fT35qyTEj_PEsKw";
-
-  conv.ask(
-    new List({
-      title: "List Title",
-      items: {
-        // Add the first item to the list
-        [SELECTION_KEY_GOOGLE_ASSISTANT]: {
-          synonyms: ["Assistant", "Google Assistant"],
-          title: "Item #1",
-          description: "Description of Item #1",
-          image: new Image({
-            url:
-              "https://www.gstatic.com/images/branding/product/2x/assistant_48dp.png",
-            alt: "Google Assistant logo",
-          }),
-        },
-        // Add the second item to the list
-        [SELECTION_KEY_GOOGLE_PAY]: {
-          synonyms: ["Transactions", "Google Payments", "Google Pay"],
-          title: "Item #2",
-          description: "Description of Item #2",
-          image: new Image({
-            url:
-              "https://www.gstatic.com/images/branding/product/2x/pay_48dp.png",
-            alt: "Google Pay logo",
-          }),
-        },
-        // Add the third item to the list
-        [SELECTION_KEY_GOOGLE_PIXEL]: {
-          synonyms: ["Pixel", "Google Pixel", "Pixel phone"],
-          title: "Item #3",
-          description: "Description of Item #3",
-          image: new Image({
-            url:
-              "https://storage.googleapis.com/madebygoog/v1/Pixel/Pixel_ColorPicker/Pixel_Device_Angled_Black-720w.png",
-            alt: "Google Pixel phone",
-          }),
-        },
-        // Add the last item to the list
-        [SELECTION_KEY_GOOGLE_HOME]: {
-          title: "Item #4",
-          synonyms: ["Home", "Google Home"],
-          description: "Description of Item #4",
-          image: new Image({
-            url:
-              "https://lh3.googleusercontent.com/Nu3a6F80WfixUqf_ec_vgXy_c0-0r4VLJRXjVFF_X_CIilEu8B9fT35qyTEj_PEsKw",
-            alt: "Google Home",
-          }),
-        },
+  conv.ask("Hey look a list");
+  conv.cheat.list({
+    items: {
+      key1: {
+        title: "Number one",
+        synonyms: ["synonym of KEY_ONE 1", "synonym of KEY_ONE 2"],
       },
-    })
-  );
+      key2: {
+        title: "Number two",
+        synonyms: ["synonym of KEY_TWO 1", "synonym of KEY_TWO 2"],
+      },
+    },
+  });
 });
 ```
 
@@ -642,72 +621,43 @@ app.intent("my intent name", (conv, parameters) => {
 {
   "webhookPayload": {
     "google": {
-      "richResponse": {
-        "items": [],
-        "suggestions": []
-      },
+      "expectUserResponse": true,
       "systemIntent": {
         "intent": "actions.intent.OPTION",
         "data": {
           "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
           "listSelect": {
-            "title": "List Title",
             "items": [
               {
                 "optionInfo": {
-                  "key": "googleAssistant",
-                  "synonyms": ["Assistant", "Google Assistant"]
+                  "key": "key1",
+                  "synonyms": ["synonym of KEY_ONE 1", "synonym of KEY_ONE 2"]
                 },
-                "description": "Description of Item #1",
-                "image": {
-                  "url": "https://www.gstatic.com/images/branding/product/2x/assistant_48dp.png",
-                  "accessibilityText": "Google Assistant logo"
-                },
-                "title": "Item #1"
+                "title": "Number one"
               },
               {
                 "optionInfo": {
-                  "key": "googlePay",
-                  "synonyms": ["Transactions", "Google Payments", "Google Pay"]
+                  "key": "key2",
+                  "synonyms": ["synonym of KEY_TWO 1", "synonym of KEY_TWO 2"]
                 },
-                "description": "Description of Item #2",
-                "image": {
-                  "url": "https://www.gstatic.com/images/branding/product/2x/pay_48dp.png",
-                  "accessibilityText": "Google Pay logo"
-                },
-                "title": "Item #2"
-              },
-              {
-                "optionInfo": {
-                  "key": "googlePixel",
-                  "synonyms": ["Pixel", "Google Pixel", "Pixel phone"]
-                },
-                "description": "Description of Item #3",
-                "image": {
-                  "url": "https://storage.googleapis.com/madebygoog/v1/Pixel/Pixel_ColorPicker/Pixel_Device_Angled_Black-720w.png",
-                  "accessibilityText": "Google Pixel phone"
-                },
-                "title": "Item #3"
-              },
-              {
-                "optionInfo": {
-                  "key": "googleHome",
-                  "synonyms": ["Home", "Google Home"]
-                },
-                "description": "Description of Item #4",
-                "image": {
-                  "url": "https://lh3.googleusercontent.com/Nu3a6F80WfixUqf_ec_vgXy_c0-0r4VLJRXjVFF_X_CIilEu8B9fT35qyTEj_PEsKw",
-                  "accessibilityText": "Google Home"
-                },
-                "title": "Item #4"
+                "title": "Number two"
               }
             ]
           }
         }
+      },
+      "richResponse": {
+        "items": [
+          {
+            "simpleResponse": {
+              "textToSpeech": "Hey look a list"
+            }
+          }
+        ]
       }
     }
   }
 }
 ```
 
-**[⬆️_TOP](#actions-on-google)**
+**[⬆️_TOP](#rich-components)**

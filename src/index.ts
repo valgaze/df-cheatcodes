@@ -2,6 +2,8 @@ export * from "./aog_cheats";
 export * from "./request_cheat";
 export * from "./api_cheat";
 export * from "./common";
+export * from "./shorcut_cheat";
+
 // Service account: client_email, private_key, project_id
 export interface SACredential {
   type?: string;

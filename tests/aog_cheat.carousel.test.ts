@@ -25,48 +25,58 @@ test("setup", function (t) {
 test("<conv.cheat.carousel: Renders spec>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = {
+    outputContexts: [
+      {
+        name:
+          "projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google",
+        lifespanCount: 99,
+        parameters: { data: '{"__map":{"various":[]}}' },
+      },
+    ],
     payload: {
       google: {
         expectUserResponse: true,
-        systemIntent: {
-          intent: "actions.intent.OPTION",
-          data: {
-            "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-            carouselSelect: {
-              items: [
-                {
-                  optionInfo: {
-                    key: "key1",
-                    synonyms: ["synonym of KEY_ONE 1", "synonym of KEY_ONE 2"],
-                  },
-                  description: "Description of number one",
-                  image: {
-                    url: "https://i.imgur.com/uMtF8ah.jpg",
-                    accessibilityText: "chocolate ice cream",
-                  },
-                  title: "Chocolate ice cream",
-                },
-                {
-                  optionInfo: {
-                    key: "key2",
-                    synonyms: ["synonym of KEY_TWO 1", "synonym of KEY_TWO 2"],
-                  },
-                  description: "Description of number one",
-                  image: {
-                    url: "https://i.imgur.com/W9Eeuu1.jpg",
-                    accessibilityText: "mint ice cream",
-                  },
-                  title: "Number two",
-                },
-              ],
-            },
-          },
-        },
         richResponse: {
           items: [
             {
               simpleResponse: {
                 textToSpeech: "Which of these looks good?",
+              },
+            },
+            {
+              carouselSelect: {
+                items: [
+                  {
+                    optionInfo: {
+                      key: "key1",
+                      synonyms: [
+                        "synonym of KEY_ONE 1",
+                        "synonym of KEY_ONE 2",
+                      ],
+                    },
+                    description: "Description of number one",
+                    image: {
+                      url: "https://i.imgur.com/uMtF8ah.jpg",
+                      accessibilityText: "chocolate ice cream",
+                    },
+                    title: "Chocolate ice cream",
+                  },
+                  {
+                    optionInfo: {
+                      key: "key2",
+                      synonyms: [
+                        "synonym of KEY_TWO 1",
+                        "synonym of KEY_TWO 2",
+                      ],
+                    },
+                    description: "Description of number one",
+                    image: {
+                      url: "https://i.imgur.com/W9Eeuu1.jpg",
+                      accessibilityText: "mint ice cream",
+                    },
+                    title: "Number two",
+                  },
+                ],
               },
             },
           ],

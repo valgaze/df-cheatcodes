@@ -1,8 +1,98 @@
-// import { dialogflow } from "actions-on-google";
-// import { send } from "./helper";
-// // import { Carousel, Image } from "actions-on-google";}
-// // Cheatcodes
-// import { convCheat } from "./../src";
+// import { dialogflow, Parameters } from "actions-on-google";
+// import { shortcutCheat, convCheat, DFCheatConversation } from "./../src";
+// const _send = async (
+//   app: any,
+//   intentName: string,
+//   queryText: string,
+//   {
+//     project = "projectid1234",
+//     session = "123456789",
+//     aogData = {}, // conv.data
+//     requestData = {}, // data that goes with the REQUEST
+//   } = {}
+// ) => {
+//   const AOG_DATA = JSON.stringify(aogData);
+//   const aog = {
+//     name: `projects/${project}/agent/sessions/${session}/contexts/_actions_on_google`,
+//     lifespanCount: 99,
+//     parameters: { data: AOG_DATA },
+//   };
+//   const req = {
+//     queryResult: {
+//       queryText,
+//       intent: { displayName: intentName },
+//       outputContexts: [aog],
+//     },
+//     session: `projects/${project}/agent/sessions/${session}`,
+//     originalDetectIntentRequest: {
+//       payload: requestData,
+//     },
+//   };
+//   const res = await app(req, {}).catch((e: any) => console.log("#", e));
+//   return res;
+// };
+
+// /**
+//  * testcheat
+//  * testcheat param=abc
+//  * testcheatalias
+//  */
+
+// const shortcutMap = {
+//   testcheat: {
+//     description: `Test cheat here`,
+//     examples: [`$cheat testcheat`, `$cheat testcheat param=abc`],
+//     handler: (
+//       conv: DFCheatConversation,
+//       parameters: Parameters,
+//       args: any
+//     ) => {},
+//   },
+// };
+// const intentName = `__df_cheathandler`;
+// const rootConfig = {
+//   intentName,
+//   keyword: `$cheat`, //
+//   map: shortcutMap,
+//   commandOverride(candidate: string) {
+//     if (candidate === "testcheatalias") {
+//       return "testcheat";
+//     }
+//     return candidate;
+//   },
+// };
+// const app = dialogflow();
+// app.use(shortcutCheat(rootConfig));
+// app.use(convCheat());
+// const transmit = _send.bind(this, app);
+
+import { dialogflow } from "actions-on-google";
+
+import { send } from "./helper";
+// import { Carousel, Image } from "actions-on-google";}
+// Cheatcodes
+import { convCheat, DFCheatConversation } from "./../src";
+
+async function main() {
+  const app = dialogflow().use(convCheat());
+
+  app.intent("xxx", (conv: DFCheatConversation) => {
+    const data = conv.cheat.getRequestData();
+    conv.ask(
+      `Here is request data with getRequestData(): ${JSON.stringify(data)}`
+    );
+    conv.ask(
+      `Here is request data with conv.data ${JSON.stringify(conv.request)}`
+    );
+  });
+
+  const res = await send(app, "xxx");
+  const actual = JSON.parse(JSON.stringify(res.body)); // res.body.payload.google etc etc
+  console.log("#", JSON.stringify(actual));
+}
+
+main();
+
 // import { apiCheat, requestCheat } from "./../src";
 
 // import { project_id, client_email, private_key } from "./service-account.json";
@@ -30,7 +120,6 @@
 // // const req = requestCheat.buildTxt('hello!') //  // queryInput: { text: { text: "hello world", languageCode: "en_US" } }
 // // const res = await cheat.detectIntent(req)
 
-// const app = dialogflow();
 // app.use(convCheat());
 // app.intent("gg", async (conv: DFCheatConversation) => {
 //   conv.ask("hi");

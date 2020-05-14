@@ -24,39 +24,6 @@ test("setup", function (t) {
   t.end();
 });
 
-test("<Custom iframe component>", (t: any) => {
-  // const sample = [
-  //   { simpleResponse: { textToSpeech: "Heres an iFrame..." } },
-  //   {
-  //     basicCard: {
-  //       title: "Here's your large mint",
-  //       subtitle: "Here's your subtitle",
-  //       formattedText:
-  //         "Here is your 🍦!!! This type of mint ice cream is great  \nEverybody after this line break loves it.",
-  //       image: {
-  //         url: "https://i.imgur.com/W9Eeuu1.jpg",
-  //         accessibilityText: "Mint!",
-  //       },
-  //       buttons: [
-  //         {
-  //           title: "Learn more about mint ice cream",
-  //           openUrlAction: {
-  //             url:
-  //               "http://kitchenability.com/kitchenability/mint-chocolate-chip-ice-cream",
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   },
-  // ];
-
-  const expected = { res: true };
-  const result = { res: true };
-  t.deepEqual(expected, result);
-
-  t.end();
-});
-
 test("<conv.addVideo: renders video spec>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = [
@@ -87,7 +54,6 @@ test("<conv.addVideo: renders video spec>", async (t: any) => {
   const clean = JSON.parse(JSON.stringify(items));
   const expected = sample;
 
-  // @ts-ignore
   t.deepEqual(clean, expected);
 });
 

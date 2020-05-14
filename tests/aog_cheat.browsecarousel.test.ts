@@ -27,6 +27,14 @@ test("setup", function (t) {
 test("<conv.cheat.browsecarousel: Renders spec>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = {
+    outputContexts: [
+      {
+        name:
+          "projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google",
+        lifespanCount: 99,
+        parameters: { data: '{"__map":{"various":[]}}' },
+      },
+    ],
     payload: {
       google: {
         expectUserResponse: true,
@@ -107,6 +115,14 @@ test("<conv.cheat.browsecarousel: Renders spec>", async (t: any) => {
 test("<conv.cheat.browsecarousel: Renders spec w/ constructors>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = {
+    outputContexts: [
+      {
+        name:
+          "projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google",
+        lifespanCount: 99,
+        parameters: { data: '{"__map":{"various":[]}}' },
+      },
+    ],
     payload: {
       google: {
         expectUserResponse: true,

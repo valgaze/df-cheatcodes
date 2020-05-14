@@ -25,17 +25,27 @@ test("setup", function (t) {
 test("<conv.cheat.suggestions: Renders spec>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = {
+    outputContexts: [
+      {
+        name:
+          "projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google",
+        lifespanCount: 99,
+        parameters: { data: '{"__map":{"various":[]}}' },
+      },
+    ],
     payload: {
       google: {
         expectUserResponse: true,
         richResponse: {
           items: [
             { simpleResponse: { textToSpeech: "Here's a random choice..." } },
-          ],
-          suggestions: [
-            { title: "option1" },
-            { title: "option2" },
-            { title: "option3" },
+            {
+              suggestions: [
+                { title: "option1" },
+                { title: "option2" },
+                { title: "option3" },
+              ],
+            },
           ],
         },
       },

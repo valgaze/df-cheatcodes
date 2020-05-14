@@ -25,6 +25,7 @@ test("setup", function (t) {
 test("<conv.cheat.triggerEvent: Triggers an event from intent handler, discards responses>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = {
+    outputContexts: [ { name: 'projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google', lifespanCount: 99, parameters: { data: '{"__map":{"various":[]}}' } } ],
     followupEventInput: { name: "my event", parameters: { a: 1, b: 2 } },
   };
 
