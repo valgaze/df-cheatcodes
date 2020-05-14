@@ -93,6 +93,16 @@ export class RequestCheat {
    */
 
   /**
+   * Update backend used in requests
+   * @param backend: http://localhost:8000/chat
+   *
+   */
+  public updateBackend(backend: string) {
+    if (backend) {
+      this.config.backend = backend;
+    }
+  }
+  /**
    *
    * @param name: event name
    * @param parameters: optional data to attach to the EVENT as parameters. (Target intent MUST have these parameters preconfigured)

@@ -2,7 +2,6 @@
 
 ```
 tl:dr; So easy it'll make you feel like you're cheating at dialogflow
-
 ```
 
 ---
@@ -23,11 +22,11 @@ Ex. Rich components the fast & easy way (notice no imports):
 
 ## Where to start?
 
-- If you've never used DialogFlow before & starting from scratch, start here: https://github.com/valgaze/dialogflow-speedrun
+- If you've never really used DialogFlow before w/ a team & are starting from scratch, start here & learn the basics: https://github.com/valgaze/dialogflow-speedrun
 
-- If you've already used DialogFlow & have an agent in place-- see the **[quickstart.md](./quickstart.md)**
+- If you've already used DialogFlow & have an agent in place-- see the **[quickstart.md](./quickstart.md)** where you can opportunistically use df-cheatcodes feature
 
-- If you need a starter project, see the **[df-cheatkit](https://github.com/valgaze/df-cheatkit)** repo for a batteries-included
+- If you need a starter frontend, server, and intent-handlers see the **[df-cheatkit](https://github.com/valgaze/df-cheatkit)** repo for a batteries-included starter example
 
 ## Functionality
 
@@ -43,6 +42,10 @@ _Collection of helpers to augment the actions-on-google and make working with ri
 
 _Helpful items for transacting with the API, can optionally transform gRPC <> JSON for event, request data as required_
 
+## endpointCheat
+
+_Add this to route to handle DialogFlow requests (evnts, text, requestdata, etc) from a frontend or other service_
+
 ### requestCheat
 
 - **Details:** **[requstCheat.md](./docs/requestCheat.md)**
@@ -55,4 +58,4 @@ df-cheatcodes provides cheats using **[actions-on-google](https://www.npmjs.com/
 
 ## License
 
-This repo uses types & concepts from {{{actions-no-google}}} which itself is under apache license. At time of writing, it seemed that clearest/simplest thing to do is match license in a notice. Accordingly, this repo conforms to the Apache 2.0 license
+This repo uses types & concepts from **[actions-on-google](https://github.com/actions-on-google/actions-on-google-nodejs)** which itself is under apache license. At time of writing, it seemed that clearest/simplest thing to do is match that license in a notice-- accordingly, this repo conforms to the **[Apache 2.0 license](LICENSE)**

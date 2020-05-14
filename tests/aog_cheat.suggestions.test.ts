@@ -35,7 +35,7 @@ test("<conv.cheat.suggestions: Renders spec>", async (t: any) => {
           suggestions: [
             { title: "option1" },
             { title: "option2" },
-            { title: "option3" },
+            { title: "optionX3" },
           ],
         },
       },

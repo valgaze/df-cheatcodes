@@ -5,30 +5,30 @@ import {
   TableOptions,
   // MediaObjectOptions,
   BrowseCarouselItemOptions,
-  ListOptions,
+  // ListOptions,
   Parameters,
   GoogleActionsV2UiElementsImage,
   GoogleActionsV2UiElementsButton,
   BrowseCarouselItem,
 } from "actions-on-google";
+import get = require("lodash.get");
 
 // Rich Components
 // Important: we don't bother aliasing LinkOutSuggestion
 import {
-  BasicCard,
-  Button,
+  // BasicCard,
+  // Button,
   Image,
-  Suggestions,
+  // Suggestions,
   Table,
   BrowseCarousel,
-  MediaObject,
+  // MediaObject,
   Carousel,
   List,
 } from "actions-on-google";
 
 // TODO: Make this configurable or use fetch
 import axios, { AxiosRequestConfig } from "axios";
-
 // Helpers for Plugin expert inspired by Nick Felker's (@Fleker) "session-entities" plugin [Feb 2020]: https://github.com/actions-on-google/dialogflow-session-entities-plugin-nodejs/tree/21ddb780316b3c11b030d8c6154bdc40533719c7
 import {
   Plugin,
@@ -41,6 +41,10 @@ import {
 export type RandomOptions = string[];
 export interface APIConfig extends AxiosRequestConfig {
   axios?: Partial<AxiosRequestConfig>;
+  [key: string]: any;
+}
+
+export interface DFCheatTemplate {
   [key: string]: any;
 }
 
@@ -88,11 +92,94 @@ export class AoGCheats {
    *  conv.cheat.pickRandom()
    *```
    */
-  pickRandom(params: RandomOptions) {
+  pickRandom(params: RandomOptions, local: boolean = false): any {
     const pick = params[Math.floor(Math.random() * params.length)];
-    console.log("> pick", pick);
-    if (typeof pick === "string") {
-      this.convRef.ask(pick);
+    if (local) {
+      return pick;
+    }
+    if (typeof pick === "string" || typeof pick === "number") {
+      return this.convRef.ask(String(pick));
+    }
+  }
+
+  /**
+   *
+   * Randomly selects a phrase & fill in template
+   *
+   * ```ts
+   *
+   * // ie from an external template file
+   * const payload = {
+   *  phrases: ['Hey there, how it going?', 'Hi $[name], here's your $[mint]']
+   * template: {
+   * name: 'Joe',
+   * flavor: 'mint'
+   *  }
+   * }
+   *
+   * conv.cheat.template(payload.phrases, payload.template)
+   *
+   * ```
+   *
+   * @param phrases: array of phrases []string
+   *
+   * ```js
+   *  ['Hello', 'Hey there!', "How is it going?"]
+   *
+   * ['Howdy, you are $[name] and you like $[flavor]', '$[name], here is $[flavor]']
+   *
+   * ```
+   * @param template: mappings to phrases object
+   *
+   * ```js
+   * {
+   *   name: 'Joe',
+   *  flavor: 'mint'
+   * }
+   *```
+   *
+   * @param {boolean} local: skip sending to chat, defaults false
+   * ```
+   * If true, will not send to chat, just return string
+   * with template returned
+   * ```
+   *
+   */
+  public template(
+    utterances: string | string[],
+    template: DFCheatTemplate,
+    local?: boolean
+  ) {
+    // TODO: cool way to do this
+    let payload: string;
+    if (typeof utterances != "string") {
+      payload = this.pickRandom(utterances, true) || "";
+    } else {
+      payload = utterances;
+    }
+    const replacer = (
+      string: string,
+      target: string,
+      replacement: string
+    ): string => {
+      if (!string.includes(target)) {
+        return string;
+      } else {
+        return replacer(
+          string.replace(`$[${target}]`, replacement),
+          target,
+          replacement
+        );
+      }
+    };
+    for (let key in template) {
+      const val = template[key];
+      payload = replacer(payload, key, val);
+    }
+    if (local) {
+      return payload;
+    } else {
+      return this.conv.ask(payload!);
     }
   }
 
@@ -368,20 +455,48 @@ export class AoGCheats {
   card(config: DFCheatCardOptions) {
     // TODO: more elegant, less tedious approach to image/button de-sugar'ing
     // TODO: support usual payload of new Image too
+    const cardTemplate = {
+      title: this._insert(config.title),
+      subtitle: this._insert(config.title),
+      formattedText: this._insert(config.text),
+    };
 
+    interface cardImage {
+      url: string;
+      alt: string;
+    }
+    const buildImage = (payload: cardImage) => {
+      return {
+        url: payload.url,
+        accessibilityText: payload.alt,
+      };
+    };
+
+    interface cardButton {
+      title: string;
+      url: string;
+    }
+    const buildButton = (payload: cardButton) => {
+      return {
+        title: payload.title,
+        openUrlAction: {
+          url: payload.url,
+        },
+      };
+    };
     // Images
     if (Array.isArray(config.images)) {
       config.images.forEach((image: any, idx: number) => {
         const { url, alt = "" } = image;
         // TODO: index w/ int
         // @ts-ignore
-        config.images[idx] = new Image({ url, alt }); // new Button
+        cardTemplate.images[idx] = buildImage({ url, alt });
       });
     } else if (config.image) {
       const { url, alt } = config.image;
       if (url && alt) {
         // @ts-ignore
-        config.image = new Image({ url, alt }); // new Button
+        cardTemplate.image = buildImage({ url, alt });
       }
     }
 
@@ -390,27 +505,34 @@ export class AoGCheats {
         const { url, title } = button;
         if (url && title) {
           // @ts-ignore
-          config.buttons[idx] = new Button({ url, title });
+          cardTemplate.buttons[idx] = buildButton({ url, title });
         }
       });
     } else if (config.buttons) {
       const { url, title } = config.buttons;
       if (url && title) {
         // @ts-ignore
-        config.buttons = [new Button({ url, title })];
+        cardTemplate.buttons = [buildButton({ url, title })];
       }
     } else if (config.button) {
       const { url, title } = config.button;
-      console.log("FIRE!");
       if (url && title) {
         // @ts-ignore
-        config.buttons = [new Button({ url, title })];
+        cardTemplate.buttons = [buildButton({ url, title })];
       }
     }
 
-    // @ts-ignore
-    // TODO: properly extend/subset card config
-    this.convRef.ask(new BasicCard(config));
+    this._add("basicCard", cardTemplate);
+  }
+
+  _add(type: string, payload: any) {
+    if (payload) {
+      this.convRef.responses.push({ [type]: payload });
+    }
+  }
+
+  _insert(val: any) {
+    return val ? val : null;
   }
 
   /**
@@ -454,15 +576,32 @@ export class AoGCheats {
    * ```
    */
   media(mediaConfig: DFCheatMediaOption) {
+    const baseTemplate = {
+      mediaType: "AUDIO",
+      mediaObjects: [
+        {
+          name: this._insert(mediaConfig.name),
+          contentUrl: this._insert(mediaConfig.url),
+          description: this._insert(mediaConfig.description),
+          icon: { url: "", accessibilityText: "" },
+        },
+      ],
+    };
+
+    const buildIcon = (url: string, alt: string) => {
+      return {
+        url,
+        accessibilityText: alt,
+      };
+    };
+
     if (mediaConfig.icon) {
       const { url, alt } = mediaConfig.icon;
       if (url && alt) {
-        // @ts-ignore
-        mediaConfig.icon = new Image({ url, alt });
+        baseTemplate.mediaObjects[0].icon = buildIcon(url, alt);
       }
     }
-    // @ts-ignore
-    this.convRef.ask(new MediaObject(mediaConfig));
+    this._add("mediaResponse", baseTemplate);
   }
 
   /**
@@ -557,7 +696,10 @@ export class AoGCheats {
     browseCarouselConfig.items = tidyItems;
 
     //@ts-ignore
-    this.convRef.ask(new BrowseCarousel(browseCarouselConfig));
+    // this.convRef.ask(new BrowseCarousel(browseCarouselConfig));
+
+    const browseCarouselPayload = new BrowseCarousel(browseCarouselConfig);
+    this._add("carouselBrowse", browseCarouselPayload);
   }
 
   /**
@@ -661,9 +803,12 @@ export class AoGCheats {
         }
       }
     }
-    // TODO: proper extend
-    // @ts-ignore
-    this.convRef.ask(new Carousel(carouselConfig));
+    //@ts-ignore
+    const carouselSelectPayload = new Carousel(carouselConfig);
+    this._add(
+      "carouselSelect",
+      carouselSelectPayload.inputValueData.carouselSelect
+    );
   }
 
   /**
@@ -671,7 +816,8 @@ export class AoGCheats {
    *
    *  conv.cheat.list(listConfig: ListOptions)
    *
-   *  Note: This must be combined with a plaintext response
+   *  Note: This must be combined with a plaintext response.
+   *  Note: We also break the rules and this goes to webhookPayload
    *
    * ## Usage
    * ```ts
@@ -681,10 +827,20 @@ export class AoGCheats {
    *   items: {
    *     key1: {
    *       title: "Number one",
+   *       description: "Description of Item #1",
    *       synonyms: ["synonym of KEY_ONE 1", "synonym of KEY_ONE 2"],
+   *       image: {
+   *         url: `http://storage.googleapis.com/automotive-media/album_art.jpg`,
+   *         alt: "access text",
+   *       },
    *     },
    *     key2: {
    *       title: "Number two",
+   *       description: "Description of item 2",
+   *       image: {
+   *         url: `http://storage.googleapis.com/automotive-media/album_art.jpg`,
+   *         alt: "access text",
+   *       },
    *       synonyms: ["synonym of KEY_TWO 1", "synonym of KEY_TWO 2"],
    *     },
    *   },
@@ -699,37 +855,10 @@ export class AoGCheats {
    *     "payload": {
    *         "google": {
    *             "expectUserResponse": true,
-   *             "systemIntent": {
-   *                 "intent": "actions.intent.OPTION",
-   *                 "data": {
-   *                     "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-   *                     "listSelect": {
-   *                         "items": [{
-   *                                 "optionInfo": {
-   *                                     "key": "key1",
-   *                                     "synonyms": [
-   *                                         "synonym of KEY_ONE 1",
-   *                                         "synonym of KEY_ONE 2"
-   *                                     ]
-   *                                 },
-   *                                 "title": "Number one"
-   *                             },
-   *                             {
-   *                                 "optionInfo": {
-   *                                     "key": "key2",
-   *                                     "synonyms": [
-   *                                         "synonym of KEY_TWO 1",
-   *                                         "synonym of KEY_TWO 2"
-   *                                     ]
-   *                                 },
-   *                                 "title": "Number two"
-   *                             }
-   *                         ]
-   *                     }
-   *                 }
-   *             },
+   *             "systemIntent": {},
    *             "richResponse": {
    *                 "items": [{
+   *                    { "listSelect": { "items": [{ "image": { "accessibilityText": "access text", "url": "http://storage.googleapis.com/automotive-media/album_art.jpg" }, "description": "Description of Item #1", "title": "Number one", "optionInfo": { "key": "key1", "synonyms": ["synonym of KEY_ONE 1", "synonym of KEY_ONE 2"] } }, { "image": { "accessibilityText": "access text", "url": "http://storage.googleapis.com/automotive-media/album_art.jpg" }, "description": "Description of item 2", "optionInfo": { "synonyms": ["synonym of KEY_TWO 1", "synonym of KEY_TWO 2"], "key": "key2" }, "title": "Number two" }] } },
    *                     "simpleResponse": {
    *                         "textToSpeech": "Hey look a list"
    *                     }
@@ -742,8 +871,24 @@ export class AoGCheats {
    * ```
    */
 
-  list(listConfig: ListOptions) {
-    this.convRef.ask(new List(listConfig));
+  list(listConfig: any) {
+    const buildImage = (payload: { url: string; alt: string }) => {
+      return {
+        url: payload.url,
+        accessibilityText: payload.alt,
+      };
+    };
+    for (let key in listConfig.items) {
+      const item = listConfig.items[key];
+      if (item.image) {
+        const { url, alt } = item.image;
+        if (url && alt) {
+          item.image = buildImage({ url, alt });
+        }
+      }
+    }
+    const listSelectPayload = new List(listConfig);
+    this._add("listSelect", listSelectPayload.inputValueData.listSelect);
   }
 
   /**
@@ -784,7 +929,12 @@ export class AoGCheats {
    */
 
   suggestions(suggestions: string[]) {
-    this.convRef.ask(new Suggestions(suggestions));
+    const template = { suggestions: [] };
+    suggestions.forEach((suggestion) => {
+      //@ts-ignore
+      template.suggestions.push({ title: suggestion });
+    });
+    this._add("suggestions", template.suggestions);
   }
 
   /**
@@ -841,7 +991,7 @@ export class AoGCheats {
    */
 
   table(tableConfig: TableOptions) {
-    this.convRef.ask(new Table(tableConfig));
+    this._add("tableCard", new Table(tableConfig));
   }
 
   /**
@@ -905,9 +1055,14 @@ export class AoGCheats {
   }
 
   loud(...data: any) {
+    console.log(`\n\n####`, new Date().toString(), `\n\n`);
+    this._log(...data);
     console.log(`\n\n####\n\n`);
-    console.log.apply(console, data);
-    console.log(`\n\n####\n\n`);
+  }
+
+  _get(config: any) {
+    //@ts-ignore
+    return get(config);
   }
 }
 
@@ -988,7 +1143,7 @@ export type DFCheatButton =
 
 // https://github.com/actions-on-google/actions-on-google-nodejs/blob/master/src/service/actionssdk/conversation/response/card/basic.ts
 export interface DFCheatCardOptions {
-  buttons?: DFCheatButtonOption[];
+  buttons?: DFCheatButtonOption[] | DFCheatButtonOption;
   button?: DFCheatButtonOption;
   images?: DFCheatImages;
   image?: DFCheatImage;
