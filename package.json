@@ -3,7 +3,7 @@
   "types": "./dist/index.d.ts",
   "version": "0.5.2",
   "description": "",
-  "main": "./dist/index.js",
+  "main": "./dist/src/index.js",
   "scripts": {
     "patch": "npm version patch",
     "prepublish": "echo 'any pre publish tasks like bumping or rebuilding, tests'",
