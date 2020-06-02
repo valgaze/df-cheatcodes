@@ -66,32 +66,32 @@
 // app.use(convCheat());
 // const transmit = _send.bind(this, app);
 
-import { dialogflow } from "actions-on-google";
+// import { dialogflow } from "actions-on-google";
 
-import { send } from "./helper";
-// import { Carousel, Image } from "actions-on-google";}
-// Cheatcodes
-import { convCheat, DFCheatConversation } from "./../src";
+// import { send } from "./helper";
+// // import { Carousel, Image } from "actions-on-google";}
+// // Cheatcodes
+// import { convCheat, DFCheatConversation } from "./../src";
 
-async function main() {
-  const app = dialogflow().use(convCheat());
+// async function main() {
+//   const app = dialogflow().use(convCheat());
 
-  app.intent("xxx", (conv: DFCheatConversation) => {
-    const data = conv.cheat.getRequestData();
-    conv.ask(
-      `Here is request data with getRequestData(): ${JSON.stringify(data)}`
-    );
-    conv.ask(
-      `Here is request data with conv.data ${JSON.stringify(conv.request)}`
-    );
-  });
+//   app.intent("xxx", (conv: DFCheatConversation) => {
+//     const data = conv.cheat.getRequestData();
+//     conv.ask(
+//       `Here is request data with getRequestData(): ${JSON.stringify(data)}`
+//     );
+//     conv.ask(
+//       `Here is request data with conv.data ${JSON.stringify(conv.request)}`
+//     );
+//   });
 
-  const res = await send(app, "xxx");
-  const actual = JSON.parse(JSON.stringify(res.body)); // res.body.payload.google etc etc
-  console.log("#", JSON.stringify(actual));
-}
+//   const res = await send(app, "xxx");
+//   const actual = JSON.parse(JSON.stringify(res.body)); // res.body.payload.google etc etc
+//   console.log("#", JSON.stringify(actual));
+// }
 
-main();
+// main();
 
 // import { apiCheat, requestCheat } from "./../src";
 
