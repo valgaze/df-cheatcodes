@@ -50,13 +50,10 @@ test("<conv.cheat.card: Card w/ image & buttons w/o constructors render correctl
     {
       basicCard: {
         title: "Here's your large mint",
-        subtitle: "Here's your subtitle",
+        subtitle: "Here's your large mint",
         formattedText:
           "Here is your 🍦!!! This type of mint ice cream is great  \nEverybody after this line break loves it.",
-        image: {
-          url: "https://i.imgur.com/W9Eeuu1.jpg",
-          accessibilityText: "Mint!",
-        },
+
         buttons: [
           {
             title: "Learn more about mint ice cream",
@@ -66,6 +63,10 @@ test("<conv.cheat.card: Card w/ image & buttons w/o constructors render correctl
             },
           },
         ],
+        image: {
+          url: "https://i.imgur.com/W9Eeuu1.jpg",
+          accessibilityText: "Mint!",
+        },
       },
     },
   ];
@@ -94,11 +95,8 @@ test("<conv.cheat.card: Card w/ image & buttons w/o constructors render correctl
   const clean = JSON.parse(JSON.stringify(items));
   const expected = sample;
 
-  // @ts-ignore
   t.deepEqual(clean, expected);
 });
-
-//   // tests go here
 
 test("teardown", function (t) {
   // ...

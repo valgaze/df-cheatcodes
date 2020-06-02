@@ -34,10 +34,11 @@ const credentials = {
   private_key,
 };
 
-import { apiCheat, RequestCheat } from "./../src";
+import { apiCheat } from "./../src";
 
 const session_id = "123456789";
-const session = `projects/${project_id}/agent/sessions/${session_id}`;
+// const session = `projects/${project_id}/agent/sessions/${session_id}`;
+const session = session_id;
 
 //@ts-ignore
 let apiRef: any;
@@ -88,7 +89,15 @@ if (credentials.project_id === "placeholder") {
 
   test("<apiCheat.detectIntent>", async (t: any) => {
     const expected = true;
-    const req = RequestCheat.buildTxt("hi", session);
+    const req = {
+      session,
+      queryInput: {
+        text: {
+          text: "hi",
+          languageCode: "en-us",
+        },
+      },
+    };
 
     const actual = await apiRef.detectIntent(req);
     const valid = actual.queryResult.queryText == "hi";
@@ -97,14 +106,18 @@ if (credentials.project_id === "placeholder") {
 
   test("<apiCheat.detectIntent>", async (t: any) => {
     const expected = true;
-    const req = RequestCheat.buildRequest({
-      kind: "text",
-      payload: { text: "hi" },
-      requestData: { a: 1, b: 2, c: 3 },
-      config: {
-        session,
+    const req = {
+      session,
+      queryInput: {
+        text: {
+          text: "hi",
+          languageCode: "en-us",
+        },
       },
-    });
+      queryParams: {
+        payload: { a: 1, b: 2, c: 3 },
+      },
+    };
 
     const actual = await apiRef.detectIntent(req);
     const valid = actual.queryResult.queryText == "hi";

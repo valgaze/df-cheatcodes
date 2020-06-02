@@ -3,8 +3,7 @@ Dream state:
     import {apiCheat} from 'df-cheatcodes'
     import credentials from './secrets/file.json'
     const config = {
-    transformRequests: true,
-    transformResponse: true,
+    transformgrpc: true,
     optimizeResponse: true, // response.dfcheatfrontend
     }
 
@@ -19,10 +18,10 @@ const _ = { get };
 import { struct, JsonObject } from "pb-util";
 
 import { SACredential } from "./index";
+import { RequestCheat } from "df-cheatcodes-base";
 
 export interface APICheatConfig {
-  transformRequests?: boolean; // JSON to protostruct
-  transformResponse?: boolean; // Protostrut to JSON
+  transformgrpc?: boolean; // JSON <> Protostruct (event parameters & request data), Protostruct <> JSON
   optimizeResponse?: boolean; // webhookPayload + fulfillmentMessages
 }
 
@@ -47,9 +46,8 @@ export interface dfCheatRequestBody {
  * import credentials from './service-account.json'
  * // All optional
  * const config = {
- *    transformRequests: false, // convert JSON to protostruct for requestData, event parameters
- *    transformResponse: false, // Protostrut to JSON
- *    optimizeResponse: false // combine webhookPayload + fulfillmentMessages
+ *    transformgrpc: false, // convert JSON to protostruct for requestData, event parameters
+ *    optimizeResponse: false // combine webhookPayload + fulfillmentMessages, other tidy up
  * }
  *
  * const cheat = new apiCheat(credentials, config)
@@ -61,7 +59,7 @@ export interface dfCheatRequestBody {
  *
  * ```
  *
- * ## Endpoint/route
+ * ## Endpoint/route middleware cheat (same config)
  *
  * ```ts
  *
@@ -73,9 +71,8 @@ export interface dfCheatRequestBody {
  * const credentials = { project_id, client_email, private_key }
  *
  * const config = {
- *    transformRequests: false, // convret JSON to protostruct for requestData, event parameters
- *    transformResponse: false, // Protostrut to JSON
- *    optimizeResponse: false // combine webhookPayload + fulfillmentMessages
+ *    transformgrpc: false, // convert JSON to protostruct for requestData, event parameters
+ *    optimizeResponse: false // combine webhookPayload + fulfillmentMessages, other tidy up
  * }
  *
  * app.post('/chat', endpointCheat(credentials, config))
@@ -86,18 +83,16 @@ export interface dfCheatRequestBody {
 export class APICheats {
   public credential: SACredential;
   public sessionClient: any; // TODO
-
-  public transformRequests: boolean;
-  public transformResponse: boolean;
+  public project_id: string;
+  public transformgrpc: boolean = false;
   public optimizeResponse: boolean;
 
   constructor(credentials: SACredential, config: APICheatConfig) {
     this.sessionClient = new SessionsClient({ credentials });
-    const { transformRequests, transformResponse, optimizeResponse } = config;
-    this.transformRequests = transformRequests || false;
-    this.transformResponse = transformResponse || false;
+    const { transformgrpc, optimizeResponse } = config;
+    this.transformgrpc = transformgrpc || false;
     this.optimizeResponse = optimizeResponse || false;
-
+    this.project_id = credentials.project_id;
     /* 
     TODOs
       Session
@@ -106,6 +101,10 @@ export class APICheats {
         - CRUD, Get all
       Paths: contextId <> contextPath
     */
+  }
+
+  public buildSessionId() {
+    return RequestCheat.buildSessionId();
   }
 
   _proto2json(payload: any) {
@@ -120,8 +119,9 @@ export class APICheats {
    * Detect Intent
    * Send a valid request, ideally with "body" property with a session attached
    *
-   * Depending on how you configure API Cheat, this will automatically transform JSON <> ProtoStruct as needed
-   *
+   * Depending on how you configure API Cheat, this can automatically transform JSON <> ProtoStruct as needed
+   * If you don't set transformgrpc your frontend needs to do this, which it can do using df-cheatcodes-base:
+   * http://github.com/valgaze/df-cheatcodes-base
    *
    * Request structure: https://cloud.google.com/dialogflow/docs/reference/rest/v2/projects.agent.sessions/detectIntent
    * Response structure: https://cloud.google.com/dialogflow/docs/reference/rest/v2/DetectIntentResponse
@@ -134,10 +134,22 @@ export class APICheats {
       (!requestBody.body && !requestBody.session) ||
       (requestBody.body && !requestBody.body.session)
     ) {
-      console.log("Warning: Missing session");
+      console.log(
+        "Warning: Missing session. Context will be lost if session is not consistent"
+      );
     }
-
-    if (this.transformRequests) {
+    let sessionValue = _.get(requestBody, "session", this.buildSessionId());
+    // Q: Should this be way more configurable from requests?
+    // ie should a request be able to specify project, agent, etc?
+    // For now, no see if it becomes important
+    if (!sessionValue.includes("/projects")) {
+      sessionValue = this.sessionClient.sessionPath(
+        this.project_id,
+        sessionValue
+      );
+      requestBody.session = sessionValue;
+    }
+    if (this.transformgrpc) {
       // requestData
       const reqData = _.get(requestBody, "queryParams.payload", false);
       if (reqData) {
@@ -156,19 +168,38 @@ export class APICheats {
         requestBody.queryInput.event.parameters = this._json2proto(reqData);
       }
     }
-    const response = await this.sessionClient.detectIntent(requestBody);
+    let response = [];
 
-    if (this.transformResponse) {
-      const webhookPayload = _.get(response, "webhookPayload", false);
-      if (webhookPayload) {
-        response.webhookPayload = this._proto2json(webhookPayload);
+    try {
+      response = await this.sessionClient.detectIntent(requestBody);
+    } catch (e) {
+      console.log("<apiCheat.detectIntent>", e);
+      if (e.details.includes("PEM routines:get_name:no")) {
+        return {
+          ERROR: {
+            msg: `Your service account credentials on backend are likely invalid, see here for details: https://github.com/valgaze/df-cheatkit/blob/master/docs/service_account.md`,
+            error: e,
+          },
+        };
+      } else {
+        return { "ERROR:": e };
       }
     }
 
-    if (this.optimizeResponse) {
-      // TODO
-      // this._optimizeResponse(response[0]);
+    if (this.transformgrpc) {
+      const webhookPayload = _.get(
+        response[0],
+        "queryResult.webhookPayload",
+        false
+      );
+      if (webhookPayload && response[0] && response[0].queryResult) {
+        response[0].queryResult = this._proto2json(webhookPayload);
+      }
     }
+
+    // if (this.optimizeResponse) {
+    //   // TODO
+    // }
 
     return response[0];
   }
@@ -204,8 +235,7 @@ export class APICheats {
  * const credentials = { project_id, client_email, private_key }
  *
  * const config = {
- *    transformRequests: false, // convret JSON to protostruct for requestData, event parameters
- *    transformResponse: false, // Protostrut to JSON
+ *    transformgrpc: false, // convert JSON to protostruct for requestData, event parameters, protostruct to JSON for responses
  *    optimizeResponse: false // combine webhookPayload + fulfillmentMessages
  * }
  *
@@ -214,8 +244,8 @@ export class APICheats {
  * ```
  *
  */
-// Make this middleware?
-// app.use(middleware.transformgRPC())
+// Explore: maybe make transformation middleware?
+// ex. app.post('/chat', middleware.transformgRPC(), endpointCheat(config, cred))
 export const endpointCheat = (
   credentials: SACredential,
   config: APICheatConfig
@@ -223,11 +253,11 @@ export const endpointCheat = (
   const inst = new APICheats(credentials, config);
   // TODO: req/res types, body-parser/no body-parser
   return async (req: any, res: any, next: any) => {
+    let payload = req;
     if (req.body) {
-      return inst.detectIntent(req.body);
-    } else {
-      return inst.detectIntent(req);
+      payload = req.body;
     }
+    return res.send(await inst.detectIntent(payload));
   };
 };
 
@@ -244,9 +274,7 @@ export const endpointCheat = (
  *
  * // All optional, default to false
  * const config = {
- *    transformRequests: false, // convert JSON to protostruct for requestData, event parameters
- *    transformResponse: false, // Protostrut to JSON
- *    optimizeResponse: false // combine webhookPayload + fulfillmentMessages
+ *    transformgrpc: false, // convert JSON to protostruct for requestData, event parameters
  * }
  *
  * const inst = apiCheat(credentials, config)

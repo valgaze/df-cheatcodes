@@ -35,6 +35,14 @@ mind-reader lol
 test("<conv.cheat.addCustom: Stows custom components on webhook payload>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = {
+    outputContexts: [
+      {
+        name:
+          "projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google",
+        lifespanCount: 99,
+        parameters: { data: '{"__map":{"various":[]}}' },
+      },
+    ],
     payload: {
       google: {
         expectUserResponse: true,
@@ -65,6 +73,15 @@ test("<conv.cheat.addCustom: Stows custom components on webhook payload>", async
 test("<conv.cheat.addVideo: stashes video config on webhook payload>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = {
+    outputContexts: [
+      {
+        name:
+          "projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google",
+        lifespanCount: 99,
+        parameters: { data: '{"__map":{"various":[]}}' },
+      },
+    ],
+
     payload: {
       google: {
         expectUserResponse: true,

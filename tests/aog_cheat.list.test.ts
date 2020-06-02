@@ -25,35 +25,48 @@ test("setup", function (t) {
 test("<conv.cheat.list: Renders spec>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = {
+    outputContexts: [
+      {
+        name:
+          "projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google",
+        lifespanCount: 99,
+        parameters: { data: '{"__map":{"various":[]}}' },
+      },
+    ],
     payload: {
       google: {
         expectUserResponse: true,
-        systemIntent: {
-          intent: "actions.intent.OPTION",
-          data: {
-            "@type": "type.googleapis.com/google.actions.v2.OptionValueSpec",
-            listSelect: {
-              items: [
-                {
-                  optionInfo: {
-                    key: "key1",
-                    synonyms: ["synonym of KEY_ONE 1", "synonym of KEY_ONE 2"],
-                  },
-                  title: "Number one",
-                },
-                {
-                  optionInfo: {
-                    key: "key2",
-                    synonyms: ["synonym of KEY_TWO 1", "synonym of KEY_TWO 2"],
-                  },
-                  title: "Number two",
-                },
-              ],
-            },
-          },
-        },
+        // systemIntent: {},
         richResponse: {
-          items: [{ simpleResponse: { textToSpeech: "Hey look a list" } }],
+          items: [
+            { simpleResponse: { textToSpeech: "Hey look a list" } },
+            {
+              listSelect: {
+                items: [
+                  {
+                    optionInfo: {
+                      key: "key1",
+                      synonyms: [
+                        "synonym of KEY_ONE 1",
+                        "synonym of KEY_ONE 2",
+                      ],
+                    },
+                    title: "Number one",
+                  },
+                  {
+                    optionInfo: {
+                      key: "key2",
+                      synonyms: [
+                        "synonym of KEY_TWO 1",
+                        "synonym of KEY_TWO 2",
+                      ],
+                    },
+                    title: "Number two",
+                  },
+                ],
+              },
+            },
+          ],
         },
       },
     },
@@ -85,6 +98,7 @@ test("<conv.cheat.list: Renders spec>", async (t: any) => {
 test("<conv.cheat.list: Renders spec with constructor>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = {
+    outputContexts: [ { name: 'projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google', lifespanCount: 99, parameters: { data: '{"__map":{"various":[]}}' } } ],
     payload: {
       google: {
         expectUserResponse: true,

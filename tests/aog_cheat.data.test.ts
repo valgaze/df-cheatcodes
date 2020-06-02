@@ -32,6 +32,14 @@ test("setup", function (t) {
 test("<conv.cheat.getRequestdata: Send request data, retrieve with getRequestData>", async (t: any) => {
   // RES.webhookPayload.google.richResponse.items
   const sample = {
+    outputContexts: [
+      {
+        name:
+          "projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google",
+        lifespanCount: 99,
+        parameters: { data: '{"__map":{"various":[]}}' },
+      },
+    ],
     payload: {
       google: {
         expectUserResponse: true,
@@ -69,15 +77,9 @@ test("<conv.cheat.getRequestdata: Send request data, retrieve with getRequestDat
   const requestData = { a: 1, b: 2, c: 3 };
 
   const res = await transmit("data_sample", { requestData });
-  const clean = JSON.parse(JSON.stringify(res.body));
+  const actual = JSON.parse(JSON.stringify(res.body));
   const expected = sample;
-
-  t.deepEqual(clean, expected);
-});
-
-test("teardown", function (t) {
-  // ...
-  t.end();
+  t.deepEqual(actual, expected);
 });
 
 test("<conv.cheat.saveData/getData: Persist data, retrieve data>", async (t: any) => {
@@ -111,12 +113,11 @@ test("<conv.cheat.saveData/getData: Persist data, retrieve data>", async (t: any
         lifespanCount: 99,
         parameters: {
           data:
-            '{"__map":{"a":{"timestamp":"1588535509116","codeword":"bongo"},"b":{"a":1,"b":2,"c":3}}}',
+            '{"__map":{"various":[],"a":{"timestamp":"1588535509116","codeword":"bongo"},"b":{"a":1,"b":2,"c":3}}}',
         },
       },
     ],
   };
-
   app.intent("data_sample", (conv: DFCheatConversation) => {
     conv.ask("setting data...");
     const fakeTimestamp = () => "1588535509116";
@@ -129,10 +130,9 @@ test("<conv.cheat.saveData/getData: Persist data, retrieve data>", async (t: any
   const requestData = { a: 1, b: 2, c: 3 };
 
   const res = await transmit("data_sample", { requestData });
-  const clean = JSON.parse(JSON.stringify(res.body));
+  const actual = JSON.parse(JSON.stringify(res.body));
   const expected = sample;
-
-  t.deepEqual(clean, expected);
+  t.deepEqual(actual, expected);
 });
 
 test("teardown", function (t) {
