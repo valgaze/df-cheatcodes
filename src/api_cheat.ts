@@ -23,6 +23,7 @@ import { RequestCheat } from "df-cheatcodes-base";
 export interface APICheatConfig {
   transformgrpc?: boolean; // JSON <> Protostruct (event parameters & request data), Protostruct <> JSON
   optimizeResponse?: boolean; // webhookPayload + fulfillmentMessages
+  cors?: boolean; // defaults to true
 }
 
 // events, text, requestData
@@ -253,11 +254,21 @@ export const endpointCheat = (
   const inst = new APICheats(credentials, config);
   // TODO: req/res types, body-parser/no body-parser
   return async (req: any, res: any, next: any) => {
+    if (config.cors === undefined || config.cors) {
+      res.set("Access-Control-Allow-Origin", "*");
+      res.set("Access-Control-Allow-Credentials", "true");
+      if (req.method === "OPTIONS") {
+        res.set("Access-Control-Allow-Methods", "GET,POST", "PUT", "DELETE");
+        res.set("Access-Control-Allow-Headers", "Bearer, Content-Type");
+        res.set("Access-Control-Max-Age", "3600");
+        res.status(204).send("");
+      }
+    }
     let payload = req;
     if (req.body) {
       payload = req.body;
     }
-    return res.send(await inst.detectIntent(payload));
+    return res.status(200).send(await inst.detectIntent(payload));
   };
 };
 
