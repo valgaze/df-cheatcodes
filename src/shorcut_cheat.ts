@@ -224,8 +224,11 @@ class ShortcutCheat {
     ## ${handlerLabel}
     
     *${description}*
-    <br />
+
+
     ${examples && examples.length ? "\n**Examples** " : ""}
+
+    
     ${
       examples && examples.length
         ? examples
@@ -261,7 +264,7 @@ class ShortcutCheat {
   
   * **<a href="/?triggermessage=%22$cheat video url=https://www.youtube.com/watch?v=YKIjXoiubzc autoplay=yes%22" _target="blank">$cheat video url=https://www.youtube.com/watch?v=YKIjXoiubzc autoplay=yes</a>**
   
-  * **<a href="/?triggermessage=%22$cheat graph line data={abc}%22" _target="blank">$cheat graph>**
+  * **<a href="/?triggermessage=%22$cheat graph" _target="blank">$cheat graph**
                 `,
               });
             }

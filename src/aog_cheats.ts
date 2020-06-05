@@ -152,7 +152,7 @@ export class AoGCheats {
     utterances: string | string[],
     template: DFCheatTemplate,
     local?: boolean
-  ) {
+  ): string | boolean {
     // TODO: cool way to do this
     let payload: string;
     if (typeof utterances != "string") {
@@ -182,7 +182,9 @@ export class AoGCheats {
     if (local) {
       return payload;
     } else {
-      return this.conv.ask(payload!);
+      this.conv.ask(payload!);
+      // hack for JsonObject bug
+      return true;
     }
   }
 
