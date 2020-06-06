@@ -31,6 +31,8 @@ app.intent("intent 123", async (conv: DFCheatConversation) => {
   // Pick random from a template (external file, multiple languages, etc)
   // NOTE: $[variable] for anything to be swapped out by template
   // ${variable} for anything replaced in local scope
+  // $[variable] syntax is most useful for building templates that
+  // exist outside the codebase
 
   const elapsedTime = new Date().getTime();
   const phrases = [

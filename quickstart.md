@@ -30,7 +30,7 @@ app.intent("intent 123", async (conv: DFCheatConversation) => {
 
   const flavor = `mint`;
 
-  // Pick a random templatized response
+  // Pick a random 'templatized' response (these can be specified in an external file)
   conv.cheat.template(
     [
       `Don't know if your name is actually '$[name]', but here's a $[flavor] icecream anyway`,
@@ -45,8 +45,10 @@ app.intent("intent 123", async (conv: DFCheatConversation) => {
   const res = await conv.cheat.get("https://swapi.py4e.com/api/people/1");
   conv.ask(`The name is ${res.data.name}`);
 
-  // Save data
+  // Save data during a seession (discarded once session expires/done)
   conv.cheat.saveData("characterName", res.data.name);
+  const char = conv.get.getData("characterName");
+  conv.add(`The character was ${char}`);
 
   // contexts
   conv.cheat.addContext("myContext", 3, { a: 1, b: 2 });
@@ -81,10 +83,15 @@ server.get("/", (req: Request, res: Response) => {
 
 const app = dialogflow();
 
-import handler from "./../webhook/express_handler";
-app.post("/webhook", handler);
+// All optional, default to false
+const config = {
+  transformgrpc: false,
+};
+app.post("/chat", endpointCheat(serviceaccount, config));
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
 ```
+
+For other examples & documentation, see the **[docs directory](./docs/README.md)**
