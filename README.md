@@ -16,19 +16,10 @@ df-cheatcodes is a library exposing useful aliases, shortcuts, functionality/[su
 
 Ex. Rich components the fast & easy way (notice no imports)
 
-![richcomponens](./docs/assets/df-cheatcodes-action.gif)
+![richcomponens](https://raw.githubusercontent.com/valgaze/df-cheatcodes/master/docs/assets/df-cheatcodes-action.gif)
 
 Ex. "\$hortcut Cheats" to quickly jump around your conversational interface & expose rich functionality
 
-Try https://df-cheatcodes.valgaze.com & try some of these shortcut cheats:
-
-````sh
-
-$cheat graph
-
-$cheat biscotti
-
-```
 Ex. Easy server (can put into a **[Cloud Function](https://cloud.google.com/functions)**)
 
 ```ts
@@ -51,7 +42,7 @@ const config = {
 };
 
 app.post("/chat", endpointCheat(credentials, config));
-````
+```
 
 Plus a bunch of other stuff (helpers for working with API, frontend, templates, random responses, retrieve/set data, etc)
 
