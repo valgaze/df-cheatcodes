@@ -61,7 +61,7 @@ Plus a bunch of other stuff (helpers for working with API, frontend, templates, 
 
 - Then if your agent needs to call external APIs to retrieve data, see here for a batteries-included starter conversation w/ a simple frontend that renders rich components: **[df-cheatkit](https://github.com/valgaze/df-cheatkit)**
 
-- If you need a frontend w/ useful conversation debugging features, see the reference implementation for **["CheatChat"](https://github.com/valgaze/df-cheatchat)**
+- If you want a frontend w/ useful conversation debugging features that you can extend/modify/style as needed, see a reference implementation for **["CheatChat"](https://github.com/valgaze/df-frontend-vue)**
 
 - If you've already used DialogFlow & have an agent in place but want to opportunistically use df-cheatcodes features see the **[quickstart.md](./quickstart.md)**
 
@@ -71,7 +71,7 @@ Plus a bunch of other stuff (helpers for working with API, frontend, templates, 
 
 - **Details:** **[aogCheat.md](./docs/aogCheat.md)**
 
-_Collection of helpers to augment the actions-on-google and make working with rich components, contexts, data, 3rd-party APIs, and other tasks faster & easier_
+_Collection of helpers to augment the actions-on-google library and make working with rich components, contexts, data, 3rd-party APIs, and other tasks faster & easier_
 
 ### apiCheat
 
@@ -81,13 +81,7 @@ _Helpful items for transacting with the API, can optionally transform gRPC <> JS
 
 ## endpointCheat
 
-_Add this to route to handle DialogFlow requests (evnts, text, requestdata, etc) from a frontend or other service_
-
-### requestCheat
-
-- **Details:** **[requstCheat.md](./docs/requestCheat.md)**
-
-_Various helpers to help simplify building requests_
+_Add this so your server routes can handle DialogFlow requests (events, text, requestdata, etc) from a frontend or other service_
 
 ### shortcutCheat
 
@@ -95,9 +89,15 @@ _Various helpers to help simplify building requests_
 
 _A trick to expose 'shareable' (copy/paste, links) points of your conversation-- useful for debugging and for users who aren't interested in a 'chat'_
 
+### requestCheat
+
+- **Details:** **[requstCheat.md](./docs/requestCheat.md)**
+
+_Various helpers to help simplify building requests_
+
 **Libraries**
 
-df-cheatcodes provides cheats using **[actions-on-google](https://www.npmjs.com/package/actions-on-google)** `^2.12.0` & **[dialogflow](https://www.npmjs.com/package/@google-cloud/dialogflow)** `^1.2.0`
+df-cheatcodes provides cheats using **[actions-on-google](https://www.npmjs.com/package/actions-on-google)** `^2.12.0` & **[dialogflow](https://www.npmjs.com/package/@google-cloud/dialogflow)** `^1.2.0` as peerDependencies.
 
 ## License
 
