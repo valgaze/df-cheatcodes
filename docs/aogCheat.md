@@ -28,12 +28,10 @@ app.intent("intent 123", async (conv: DFCheatConversation) => {
     "Bonjour!",
   ]);
 
-  // Pick random from a template (external file, multiple languages, etc)
-  // NOTE: $[variable] for anything to be swapped out by template
-  // ${variable} for anything replaced in local scope
-  // $[variable] syntax is most useful for building templates that
-  // exist outside the codebase
-
+  // Templates
+  // Useful for a11y, multiple languages, use external config file
+  // $[variable] for anything available in template at build time
+  // ${variable} for anything only available at runtime
   const elapsedTime = new Date().getTime();
   const phrases = [
     `Hey $[name]! Here's your $[flavor] ice cream`,
@@ -55,11 +53,15 @@ app.intent("intent 123", async (conv: DFCheatConversation) => {
   const res = await conv.cheat.post("https://postman-echo.com/post", { a: 1 });
   conv.ask(`Posted response ${JSON.stringify(res)}`);
 
-  // Save data between intents (attached to full conversation session)
+  // Save data between intents
+  // available for duration of conversation session
   conv.cheat.saveData("characterName", res.data.name);
   conv.cheat.getData("characterName"); // value of res.data.name
 
-  const requestData = conv.cheat.getRequestData(); // Get conv.request data (anything sent with queryParams.payload, https://cloud.google.com/dialogflow/docs/reference/rest/v2/QueryParameters
+  // Get request data
+  // Attached to queryParams.payload
+  // Read more: https://cloud.google.com/dialogflow/docs/reference/rest/v2/QueryParameters
+  const requestData = conv.cheat.getRequestData();
 
   // contexts
   conv.cheat.addContext("myContext", 3, { a: 1, b: 2 });

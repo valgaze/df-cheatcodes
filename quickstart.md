@@ -9,16 +9,16 @@ npm i df-cheatcodes --save
 ex. intent_handler.ts:
 
 ```ts
+// Setup, config. blah-blah
 import { dialogflow } from "actions-on-google";
-
 import { convCheat } from "df-cheatcodes";
+const app = dialogflow();
+app.use(convCheat());
 
 // types
 import { DFCheatConversation } from "df-cheatcodes";
 
-const app = dialogflow();
-app.use(convCheat());
-
+// Intent handler (these can be broken out into files, see: https://github.com/valgaze/df-cheatkit/tree/master/src/webhook)
 app.intent("intent 123", async (conv: DFCheatConversation) => {
   // Pick random (this could/should be an external file)
   conv.cheat.pickRandom([

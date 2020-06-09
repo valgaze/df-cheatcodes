@@ -22,11 +22,11 @@ async function main() {
   const res = await requester.send("hello!!");
   console.log("Result", JSON.stringify(res));
 }
-å;
+
 main();
 ```
 
-## Event w/ transformed parameters
+## Event w/ parameters, request data (transformed & not)
 
 See **[grpc_101.md](./grpc_101.md)** for details
 
@@ -46,19 +46,19 @@ const config = {
 // Note transformgrpc is true
 const requester = new RequestCheat(config);
 
-// There are aliases for this, but most explicit version using "global" config
-const eventPayload = requester.constructRequest({
+// There are aliases for this, but most explicit version using "global" config (globally-set session, languageCode, etc with overwrites)
+const eventPayload = requester.buildRequest({
   kind: "event",
-  payload: {
+  content: {
     name: "my event",
     parameters: { a: 1, b: 2, c: ["hi", "yay", "bonjour"] },
-    languageCode: "en_US",
   },
 });
 
+// Send to backend specified in config
 requester.send(eventPayload);
 /**
- * EventPayload (grpc transformed)
+ * EventPayload (grpc transformed protostruct on event parameters)
  * {
  *	"queryInput": {
  *		"event": {
@@ -94,29 +94,18 @@ requester.send(eventPayload);
  *		}
  *	}
  *
- **/
+ */
+
+// Ex. Event w/ request data using alias
+
+const eventName = `myevent`;
+const parameters = { xxx: 12345 }; // data/parameters attached to *event*
+// Data associated w/ request (conv.cheat.getRequestData in handler)
+const requestData = {
+  a: 1,
+  b: 2,
+  c: ["hi", "yay", "bonjour"],
+};
+
+const eventPayload = requester.event(eventName, parameters, requestData);
 ```
-
-## Event w/ transformed parameters & request data
-
-```ts
-    import {RequestCheat} from 'df-cheatcodes'
-    const session = RequestCheat.buildSessionId();
-
-    RequestCheat.constructRequest({
-     kind: "event",
-     payload: {
-			"name": "Welcome",
-			"languageCode": "en-us"
-			"parameters": {
-				"z": 9
-				"y": 8,
-				"x": 7
-			}
-		},
-
-```
-
-/_
-{"queryInput":{"event":{"name":"my event","parameters":{"fields":{"a":{"kind":"numberValue","numberValue":1},"b":{"kind":"numberValue","numberValue":2},"c":{"kind":"listValue","listValue":{"values":[{"kind":"stringValue","stringValue":"hi"},{"kind":"stringValue","stringValue":"yay"},{"kind":"stringValue","stringValue":"bonjour"}]}}}},"languageCode":"en_US"}}}
-_/

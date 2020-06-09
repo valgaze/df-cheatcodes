@@ -233,7 +233,7 @@ class ShortcutCheat {
       examples && examples.length
         ? examples
             .map((example) => {
-              return `* **${example}**`;
+              return `\n* **${example}**`;
             })
             .join("\n")
         : ""
