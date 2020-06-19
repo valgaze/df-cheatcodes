@@ -6,7 +6,7 @@ tl:dr; So easy it'll make you feel like you're cheating at dialogflow
 
 ---
 
-**Note:** For the very impatient, go here: **[quickstart.md](./quickstart.md)**
+**Note:** For the very impatient, go here: **[quickstart.md](https://github.com/valgaze/df-cheatcodes/blob/master/quickstart.md)**
 
 If you need more pieces (ie a web-based frontend interface, **[fulfillment webhook](https://cloud.google.com/dialogflow/docs/fulfillment-overview)**, etc), see **["Where to start?"](#where-to-start)**
 
@@ -60,13 +60,13 @@ Plus a bunch of other stuff (helpers for working with API, frontend, templates, 
 
 ### aogCheat
 
-- **Details:** **[aogCheat.md](./docs/aogCheat.md)**
+- **Details:** **[aogCheat.md](https://github.com/valgaze/df-cheatcodes/blob/master/docs/aogCheat.md)**
 
 _Collection of helpers to augment the actions-on-google library and make working with rich components, contexts, data, 3rd-party APIs, and other tasks faster & easier_
 
 ### apiCheat
 
-- **Details:** **[apiCheat.md](./docs/apiCheat.md)**
+- **Details:** **[apiCheat.md](https://github.com/valgaze/df-cheatcodes/blob/master/docs/apiCheat.md)**
 
 _Helpful items for transacting with the API, can optionally transform gRPC <> JSON for event, request data as required_
 
@@ -76,13 +76,13 @@ _Add this so your server routes can handle DialogFlow requests (events, text, re
 
 ### shortcutCheat
 
-- **Details:** **[shortcutCheat.md](./docs/shortcutCheat.md)**
+- **Details:** **[shortcutCheat.md](https://github.com/valgaze/df-cheatcodes/blob/master/docs/shortcutCheat.md)**
 
 _A trick to expose 'shareable' (copy/paste, links) points of your conversation-- useful for debugging and for users who aren't interested in a 'chat'_
 
 ### requestCheat
 
-- **Details:** **[requstCheat.md](./docs/requestCheat.md)**
+- **Details:** **[requstCheat.md](https://github.com/valgaze/df-cheatcodes/blob/master/docs/requestCheat.md)**
 
 _Various helpers to help simplify building requests_
 
