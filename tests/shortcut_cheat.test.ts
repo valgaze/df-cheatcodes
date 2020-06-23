@@ -106,17 +106,13 @@ test("<ShortcutCheat setup>", async (t: any) => {
                   "'Shortcut Cheats' are a simple way to QUICKLY hop around your conversational interface or expose rich functionality with copy-paste'able commands",
               },
             },
-            {
-              simpleResponse: {
-                textToSpeech: "Handy cheat commands",
-              },
-            },
+            { simpleResponse: { textToSpeech: "Handy cheat commands" } },
             {
               basicCard: {
                 title: "testcheat",
                 subtitle: "testcheat",
                 formattedText:
-                  "\n    ## testcheat\n    \n    *Test cheat here*\n\n\n    \n**Examples** \n\n    \n    * **$cheat testcheat**\n* **$cheat testcheat param=abc**",
+                  "\n    ## testcheat\n    \n    *Test cheat here*\n\n\n    \n**Examples** \n\n    \n    \n* **$cheat testcheat**\n\n* **$cheat testcheat param=abc**",
                 image: {},
                 buttons: [],
               },
@@ -140,18 +136,13 @@ test("<ShortcutCheat setup>", async (t: any) => {
         name:
           "projects/projectid1234/agent/sessions/123456789/contexts/_actions_on_google",
         lifespanCount: 99,
-        parameters: {
-          data: '{"__map":{"various":[]}}',
-        },
+        parameters: { data: '{"__map":{"various":[]}}' },
       },
     ],
   };
   const res = await transmit("__df_cheathandler", "$cheat help");
   const actual = JSON.parse(JSON.stringify(res.body)); // res.body.payload.google etc etc
   const expected = sample;
-
-  console.log(`\n\nACTUAL`, JSON.stringify(actual));
-  console.log(`\n\expected`, JSON.stringify(expected));
   t.deepEqual(actual, expected);
 });
 
