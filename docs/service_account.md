@@ -14,7 +14,7 @@ Below is the fastest route to a credential file that has 3 properties of interes
 
 Ex.
 
-![serviceaccount](./assets/service_account_1.gif)
+![serviceaccount](https://github.com/valgaze/df-cheat-docs/blob/master/assets/service_account_1.gif?raw=true)
 
 ## Step 2: Create a service account & create a key
 
@@ -26,7 +26,7 @@ Ex.
 
 4. Select JSON, download your credential, rename it to `service-account.json` and place inside your project
 
-![serviceaccount](./assets/service_account_2.gif)
+![serviceaccount](https://github.com/valgaze/df-cheat-docs/blob/master/assets/service_account_2.gif?raw=true)
 
 ## Resources
 

@@ -60,7 +60,7 @@ POST to /chat:
   "session": "12343453",
   "queryInput": {
     "text": {
-      "text": "password recovery",
+      "text": "hello world",
       "languageCode": "en-us"
     }
   }

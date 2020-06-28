@@ -1,4 +1,4 @@
-![df-cheats](https://raw.githubusercontent.com/valgaze/df-cheatcodes/master/docs/assets/df_cheatcodes.gif)
+![df-cheats](https://github.com/valgaze/df-cheat-docs/blob/master/assets/df_cheatcodes.gif?raw=true)
 
 ```
 tl:dr; So easy it'll make you feel like you're cheating at dialogflow
@@ -16,9 +16,11 @@ df-cheatcodes is a library exposing useful aliases, shortcuts, functionality/[su
 
 Ex. Rich components the fast & easy way (notice no imports)
 
-![richcomponens](https://raw.githubusercontent.com/valgaze/df-cheatcodes/master/docs/assets/df-cheatcodes-action.gif)
+![richcomponens](https://raw.githubusercontent.com/valgaze/df-cheat-docs/master/assets/df-cheatcodes-action.gif)
 
-Ex. "\$hortcut Cheats" to quickly jump around your conversational interface & expose rich functionality
+Ex. "\$hortcut Cheats" to quickly jump around your conversational interface & expose rich functionality. (Think of these as similiar to **[deep links](https://www.raywenderlich.com/6080-universal-links-make-the-connection)** but here it's deep linking to functionality of your intelligent agent)
+
+![shortcut](https://github.com/valgaze/df-cheat-docs/blob/master/ex/ex3_shortcuts.gif?raw=true)
 
 Ex. Easy server (can put into a **[Cloud Function](https://cloud.google.com/functions)**)
 
@@ -54,7 +56,7 @@ Plus a bunch of other stuff (helpers for working with API, frontend, templates, 
 
 - If you want a frontend w/ useful conversation debugging features that you can extend/modify/style as needed, see a reference implementation for **["CheatChat"](https://github.com/valgaze/df-frontend-vue)**
 
-- If you've already used DialogFlow & have an agent in place but want to opportunistically use df-cheatcodes features see the **[quickstart.md](./quickstart.md)**
+- If you've already used DialogFlow & have an agent in place but want to opportunistically use df-cheatcodes features see the **[quickstart.md](https://github.com/valgaze/df-cheatcodes/blob/master/quickstart.md)**
 
 ## Functionality
 
@@ -66,7 +68,7 @@ _Collection of helpers to augment the actions-on-google library and make working
 
 ### apiCheat
 
-- **Details:** **[apiCheat.md](https://github.com/valgaze/df-cheatcodes/blob/master/docs/apiCheat.md)**
+- **Details:** **[api.md](https://github.com/valgaze/df-cheatcodes/blob/master/docs/api.md)**
 
 _Helpful items for transacting with the API, can optionally transform gRPC <> JSON for event, request data as required_
 

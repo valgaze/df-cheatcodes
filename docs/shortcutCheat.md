@@ -64,7 +64,7 @@ const app = dialogflow();
 // 2) Activate AoG cheats (this can make iterating on advanced functionality faster/easier, but not strictly necessary)
 app.use(convCheat());
 
-// 3) Activate shortcutCheat (an intent handler is registered uner the hood)
+// 3) Activate shortcutCheat (an intent handler is registered under the hood)
 // All you need to worry about is the shortcutMap
 app.use(shortcutCheat(rootConfig));
 ```

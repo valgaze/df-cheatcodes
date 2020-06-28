@@ -1,6 +1,2 @@
-node_modules/
-test/
-CONTRIBUTING.md
-tsconfig.json
-*.tgz
-yarn.lock
+docs/
+tests/service-account.json
