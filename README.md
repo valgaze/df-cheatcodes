@@ -52,7 +52,7 @@ Plus a bunch of other stuff (helpers for working with API, frontend, templates, 
 
 - If you've never really used DialogFlow before, start here & do the exercises to learn the basics: https://github.com/valgaze/dialogflow-speedrun
 
-- Then if your agent needs to call external APIs to retrieve data, see here for a batteries-included starter conversation w/ a simple frontend that renders rich components: **[df-cheatkit](https://github.com/valgaze/df-cheatkit)**
+- Then if your agent needs to call external APIs to retrieve data, see here for a batteries-included starter conversation w/ a simple frontend that renders rich components: **[df-starter-tkit](https://github.com/valgaze/df-starter-kit)**
 
 - If you want a frontend w/ useful conversation debugging features that you can extend/modify/style as needed, see a reference implementation for **["CheatChat"](https://github.com/valgaze/df-frontend-vue)**
 
