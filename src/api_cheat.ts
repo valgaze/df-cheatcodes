@@ -178,7 +178,7 @@ export class APICheats {
       if (e.details.includes("PEM routines:get_name:no")) {
         return {
           ERROR: {
-            msg: `Your service account credentials on backend are likely invalid, see here for details: https://github.com/valgaze/df-cheatkit/blob/master/docs/service_account.md`,
+            msg: `Your service account credentials on backend are likely invalid, see here for details: https://github.com/valgaze/df-starter-kit/blob/master/docs/service_account.md`,
             error: e,
           },
         };
