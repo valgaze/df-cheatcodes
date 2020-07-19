@@ -18,7 +18,7 @@ app.use(convCheat());
 // types
 import { DFCheatConversation } from "df-cheatcodes";
 
-// Intent handler (these can be broken out into files, see: https://github.com/valgaze/df-cheatkit/tree/master/src/webhook)
+// Intent handler (these can be broken out into files, see: https://github.com/valgaze/df-starter-kit/tree/master/src/webhook)
 app.intent("intent 123", async (conv: DFCheatConversation) => {
   // Pick random (this could/should be an external file)
   conv.cheat.pickRandom([

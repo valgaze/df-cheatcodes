@@ -31,18 +31,18 @@ app.intent("intent 123", async (conv: DFCheatConversation) => {
   // Templates
   // Useful for a11y, multiple languages, use external config file
   // $[variable] for anything available in template at build time
-  // ${variable} for anything only available at runtime
   const elapsedTime = new Date().getTime();
   const phrases = [
     `Hey $[name]! Here's your $[flavor] ice cream`,
     `Yo $[name], one $[flavor] for 'ya!`,
     `A $[flavor] for $[name]!`,
-    `Did you know it's been ${elapsedTime} since 1970, $[name]? Crazy right? Anyway here's your $[flavor] ice cream`,
+    `Did you know it's been $[elapsedTime] since 1970, $[name]? Crazy right? Anyway here's your $[flavor] ice cream`,
   ];
 
   conv.cheat.template(phrases, {
     name: "Joe",
     flavor: "mint",
+    elapsedTime,
   });
 
   // Interact with APIs (retrieve data)
@@ -91,7 +91,7 @@ app.intent("intent 123", async (conv: DFCheatConversation) => {
 
 ## Individual File
 
-Like in **[df-cheatkit](https://github.com/valgaze/df-cheatkit)**
+Like in **[df-starter-kit](https://github.com/valgaze/df-starter-kit)**
 
 ```ts
 import { dialogflow } from "actions-on-google";
